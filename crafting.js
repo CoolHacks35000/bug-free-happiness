@@ -61,6 +61,16 @@ let pickaxeRecipes = [
         ["🃏", 1],
         ["🎲", 1],
         ["🗜️", 1]
+        /*
+        ["🟫", 650000],
+        ["🟧", 75000],
+        ["🟪", 60000],
+        ["❤️", 5], 
+        ["🤍", 3],
+        ["🍁", 1],
+        ["🎄", 1],
+        ["🎍", 1]
+        */
     ],
     [
         //PICKAXE 7
@@ -123,6 +133,16 @@ let gearRecipes = [
         ["⚱️", 2],
         ["🎀", 1],
         ["⭐", 1]
+    ],
+    //INFINITE ORE COLLECTOR
+    [
+        ["🪨", 15000000],
+        ["💠", 25],
+        ["⚜️", 25],
+        ["🔋", 10],
+        ["🔮", 7],
+        ["☄️", 5],
+        ["💎", 1]
     ]
 ]
 
@@ -142,7 +162,6 @@ function displayRecipe(num) {
         let temp = parent.children;
         temp = temp[0].children;
         temp = temp[temp.length - 1];
-        console.log(num);
         if (currentPickaxe == num + 1) {
             temp.innerHTML = "Equipped!";
         } else if (pickaxes[num + 1][1]) {
