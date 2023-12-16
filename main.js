@@ -11,17 +11,17 @@ let mineCapacity = 40000; // in case this ever needs to be raised
 let canMine = false;
 let lastDirection = "";
 let pickaxes = [
-    ["Basic Pickaxe", true],
-    ["Advanced Pickaxe", false],
-    ["DynAxe", false],
-    ["X-Axe", false],
-    ["RandAxe", false],
-    ["Name5", false],
-    ["Name6", false],
-    ["Name7", false],
-    ["Name8", false]
+    ["is anyone gonna read these lol", true],
+    ["hi!!! hii!!", false],
+    ["wait no get out of here", false],
+    ["stop it get out", false],
+    ["leave!!!!!!!!", false],
+    ["i have your ip", false],
+    ["grrrrr leave!!", false],
+    [":pouting-cat:", false],
+    [">:C", false]
 ];
-let gears = [false, false, false];
+let gears = [false, false, false, false];
 let currentPickaxe = 0;
 let oreList = {
     "🐱" : [1/Infinity, [0,0,0,0]],
@@ -474,9 +474,23 @@ function createMine() {
     checkAllAround(curX, curY, 1);
     displayArea();
 }
-
+let inRow = 0;
 function movePlayer(dir) {
     if (canMine) {
+        let currentMove = Date.now();
+        if (currentMove - moveTimes.getThisTime() <= 5) {
+            inRow++;
+            console.log(inRow);
+        } else {
+            inRow = 0;
+        }
+        if (inRow > 10) {
+            saveAllData();
+            setTimeout(() => {
+                location.reload();
+            }, 100);
+        }
+        moveTimes.thisNewTime();
         switch (dir) {
             case "s":
                     mineBlock(curX, curY + 1, "mining", 1);
@@ -552,7 +566,9 @@ document.addEventListener('keydown', (event) => {
     if (name == "a" || name == "s" || name == "d" || name == "w") {
         clearInterval(loopTimer);
         curDirection = "";
-        movePlayer(name);
+        setTimeout(() => {
+            movePlayer(name);
+        }, 15);
     }
   }, false);
 
@@ -910,6 +926,7 @@ function showIndex() {
     }
 }
 let spawnOre;
+let loggedFinds = [];
 let latestSpawns = [];
 function spawnMessage(block, location) {
     let output = "";
@@ -917,6 +934,9 @@ function spawnMessage(block, location) {
         latestSpawns.push([block, location[1], location[0]]);
     } else {
         latestSpawns.push([block, undefined, undefined]);
+    }
+    if (gears[3]) {
+        loggedFinds.push([location[0], location[1]]);
     }
     if (latestSpawns.length > 10) {
         latestSpawns.splice(0, 1);
@@ -943,17 +963,30 @@ function spawnMessage(block, location) {
         mineCapacity += 2000;
     }
 }
-function moveOne(dir) {
+function moveOne(dir, button) {
+    button.disabled = true;
     clearInterval(loopTimer);
+    setTimeout(() => {
     movePlayer(dir);
+    }, 15);
     curDirection = "";
+    setTimeout(() => {
+    button.disabled = false;
+    }, 100);
 }
 
 async function mineReset() {
     mineCapacity = 40000;
     let temp = curDirection;
     curDirection = "";
-    let temp2 = await collectOres(temp);
+    if (gears[3]) {
+        for (let i = 0; i < loggedFinds.length; i++) {
+            mineBlock(loggedFinds[i][1], loggedFinds[i][0], "reset", 1);
+        }
+        loggedFinds = [];
+    } else {
+        let temp2 = await collectOres(temp);
+    }
     canMine = await mineResetAid();
     checkAllAround(curX, curY, 1);
     mine[curY][curX] = "⛏️"
