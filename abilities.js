@@ -1,7 +1,7 @@
 async function rollAbilities() {
     let boost = 1;
     if (gears[1]) {
-        boost = 5.5;
+        boost = 3;
     }
     switch (currentPickaxe) {
         case 1:
@@ -353,7 +353,7 @@ function pickaxeAbility9(x, y, reps, boost) {
                 [],
                 []
             ];
-        let thisLuck = 25 * boost;
+        let thisLuck = 15 * boost;
         let constraints = getParams(6, 6, x, y);
         let origin = [y, x];
     for (let i = 0; i < constraints[0]; i++) {
