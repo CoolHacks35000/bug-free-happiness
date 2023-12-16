@@ -353,7 +353,7 @@ function pickaxeAbility9(x, y, reps, boost) {
                 [],
                 []
             ];
-        let thisLuck = 2000 * boost;
+        let thisLuck = 20000 * boost;
         let constraints = getParams(6, 6, x, y);
         let origin = [y, x];
     for (let i = 0; i < constraints[0]; i++) {
