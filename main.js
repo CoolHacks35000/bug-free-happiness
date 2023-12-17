@@ -480,7 +480,6 @@ function movePlayer(dir) {
         let currentMove = Date.now();
         if (currentMove - moveTimes.getThisTime() <= 5) {
             inRow++;
-            console.log(inRow);
         } else {
             inRow = 0;
         }
@@ -545,7 +544,7 @@ function movePlayer(dir) {
 }
 
 function mineBlock(x, y, cause, luck) {
-    if (mine[y][x] != "⚪" && mine[y][x] != "⛏️")  {
+    if (mine[y][x] != "⚪" && mine[y][x] != "⛏️" && mine[y][x] != "⬜")  {
         if (cause == "reset") {
             giveBlock(mine[y][x], x, y, true);
             mine[y][x] = "⚪"
@@ -642,7 +641,7 @@ function displayArea() {
     }
     document.getElementById("blockDisplay").innerHTML = output;
     document.getElementById("mineResetProgress").innerHTML = blocksRevealedThisReset + "/" + mineCapacity + " Blocks Revealed This Reset";
-    document.getElementById("blocksMined").innerHTML = totalMined + " Blocks Mined";
+    document.getElementById("blocksMined").innerHTML = totalMined.toLocaleString() + " Blocks Mined";
     document.getElementById("location").innerHTML = "X: " + (curX - 1000000000) + " | Y: " + (-curY);
   }
   function getParams(distanceX, distanceY, x, y) {
@@ -753,7 +752,9 @@ function generateBlock(luck, location) {
             playSound("transcendent");
         } else if (Math.round(1 / (probabilityTable[blockToGive])) >= 750000) {
             spawnMessage(blockToGive, location);
-            playSound("exotic");
+            if (currentPickaxe < 7) {
+                playSound("exotic");
+            }
         }
         return blockToGive;
 }
