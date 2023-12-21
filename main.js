@@ -1,3 +1,88 @@
+class antiCheat {
+        #lastMove;
+        #inRow;
+    constructor() {
+        this.#lastMove = Date.now();
+        this.#inRow = 0;
+        }
+        #getNewTime() {
+            this.#lastMove = Date.now();
+        }
+        checkTimes() {
+            if (Date.now() - this.#lastMove <= 5) {
+                this.#inRow++;
+            } else {
+                this.#inRow = 0;
+            }
+            this.#getNewTime();
+            return (this.#inRow > 10);
+        }
+}
+class secureLogs {
+    #spawnLogs;
+    #verifiedLogs;
+    #logsTimer;
+    constructor() {
+        this.#spawnLogs = [];
+        this.#verifiedLogs = [];
+        this.#logsTimer = null;
+    }
+    createLog(r, c, intended, obj, luck) {
+        if (obj.stack.includes("main.js") && luck < 23) {
+            if (mine[r][c] == "⬜") {
+                this.#spawnLogs.push([r, c, intended]);
+            }
+        } 
+    }
+    verifyLog(r, c) {
+        for (let i = 0; i < this.#spawnLogs.length; i++) {
+            if (this.#spawnLogs[i][0] == r && this.#spawnLogs[i][1] == c) {
+                if (mine[r][c] == this.#spawnLogs[i][2]) {
+                    this.#spawnLogs.splice(i, 1);
+                    this.#verifiedLogs.push([mine[r][c], [r, c], new Date(), false, "Normal"]);
+                    break;
+                }
+            }
+        }
+        
+    }
+    verifyFind(block, r, c, variant) {
+        for (let i = 0; i < this.#verifiedLogs.length; i++) {
+            if (this.#verifiedLogs[i][1][0] == r && this.#verifiedLogs[i][1][1] == c) {
+                if (block == this.#verifiedLogs[i][0]) {
+                    this.#verifiedLogs[i][3] = true;
+                    this.#verifiedLogs[i][4] = variant;
+                    break;
+                }
+            }
+        }
+    }
+    showLogs() {
+        if (document.getElementById("dataExport").style.display == "block") {
+                clearInterval(this.#logsTimer);
+                this.#logsTimer = null;
+                let element = document.createElement("p");
+                element.id = "generatedLogs";
+                document.getElementById("logHolder").appendChild(element);
+                let output = "";
+                for (let i = 0; i < this.#verifiedLogs.length; i++) {
+                    output += this.#verifiedLogs[i][0] + this.#verifiedLogs[i][2] + this.#verifiedLogs[i][3] + ", " + this.#verifiedLogs[i][4] +"<br>";
+                }
+                this.#logsTimer = setInterval(this.#reloadLogs, 50, output);
+        } else {
+            clearInterval(this.#logsTimer);
+            this.#logsTimer = null;
+            if (document.getElementById("generatedLogs") != null) {
+                document.getElementById("generatedLogs").remove();
+            }
+        }
+        
+    }
+    #reloadLogs(output) {
+        document.getElementById("generatedLogs").innerHTML = output;
+    }
+
+}
 let mine = [];
 let curX = 1000000000;
 let curY = 0;
@@ -19,9 +104,10 @@ let pickaxes = [
     ["i have your ip", false],
     ["grrrrr leave!!", false],
     [":pouting-cat:", false],
-    [">:C", false]
+    [">:C", false],
+    ["IM HERE NOW TOO", false]
 ];
-let gears = [false, false, false, false];
+let gears = [false, false, false, false, false];
 let currentPickaxe = 0;
 let oreList = {
     "🐱" : [1/Infinity, [0,0,0,0]],
@@ -57,6 +143,7 @@ let oreList = {
     "🌪️" : [1/247010000, [0,0,0,0]], //ADDED
     "🌏" : [1/213200000, [0,0,0,0]], //ADDED
     "📝" : [1/200000000, [0,0,0,0]], //ADDED
+    "⛄" : [1/183640000, [0,0,0,0]], //ADDED
     "💎" : [1/170000000, [0,0,0,0]], //ADDED
     "🔥" : [1/160000000, [0,0,0,0]], //ADDED
     "🔆" : [1/75000000, [0,0,0,0]], //
@@ -152,6 +239,7 @@ let dirtLayer = {
     "🥗" : 1/800000000,
     "🌪️" : 1/247010000,
     "🌏" : 1/213200000,
+    "⛄" : 1/183640000,
     "🌲" : 1/71000000,
     "🎃" : 1/69000000,
     "🎍" : 1/35000000,
@@ -187,6 +275,7 @@ let brickLayer = {
     "🥉" : 1/444444444, 
     "🪞" : 1/426800050,
     "🔩" : 1/420836000,
+    "⛄" : 1/183640000,
     "🧲" : 1/43500000,
     "🪬" : 1/37000000,
     "🧨" : 1/31500000,
@@ -223,6 +312,7 @@ let foggyLayer = {
     "👁️" : 1/1920000000,
     "💸" : 1/754000000,
     "⌛" : 1/750000000,
+    "⛄" : 1/183640000,
     "🕯️" : 1/62500000,
     "🕋" : 1/55000000,
     "🎨" : 1/44000000,
@@ -258,6 +348,7 @@ let waterLayer = {
     "🪩" : 1/999999999,
     "👿" : 1/750000000,
     "🌀" : 1/618000000,
+    "⛄" : 1/183640000,
     "🔱" : 1/70000000,
     "👑" : 1/65000000,
     "🐟" : 1/26000000,
@@ -292,6 +383,7 @@ let rockLayer = {
     "🏔️" : 1/5500000000,
     "🧊" : 1/583000000,
     "❄️" : 1/386500000,
+    "⛄" : 1/183640000,
     "💎" : 1/170000000,
     "☄️" : 1/72500000,
     "🔮" : 1/60000000,
@@ -328,6 +420,7 @@ let radioactiveLayer = {
     "🧀" : 1/618000001,
     "🌌" : 1/550000000,
     "🥀" : 1/538000000,
+    "⛄" : 1/183640000,
     "🎇" : 1/67500000,
     "🔳" : 1/46000000,
     "⏹️" : 1/29000000,
@@ -362,6 +455,7 @@ let cactusLayer = {
     "🐪" : 1/7800000000,
     "🪐" : 1/709000750,
     "💥" : 1/375000000,
+    "⛄" : 1/183640000,
     "🔥" : 1/160000000,
     "🔆" : 1/75000000,
     "⭐" : 1/70600600,
@@ -398,6 +492,7 @@ let paperLayer = {
     "👀" : 1/955200890,
     "🌟" : 1/257280000,
     "📝" : 1/200000000,
+    "⛄" : 1/183640000,
     "⌚" : 1/52000000,
     "🗜️" : 1/42000000,
     "🏆" : 1/38000000,
@@ -433,6 +528,7 @@ let sillyLayer = {
     "✈️" : 1/9110000000,
     "🪢" : 1/8181818181, 
     "🫃" : 1/6600000000,
+    "⛄" : 1/183640000,
     "🎂" : 1/1
 }
 let allLayers = [dirtLayer, brickLayer, foggyLayer, waterLayer, rockLayer, radioactiveLayer, cactusLayer, paperLayer, sillyLayer];
@@ -474,22 +570,14 @@ function createMine() {
     checkAllAround(curX, curY, 1);
     displayArea();
 }
-let inRow = 0;
 function movePlayer(dir) {
     if (canMine) {
-        let currentMove = Date.now();
-        if (currentMove - moveTimes.getThisTime() <= 5) {
-            inRow++;
-        } else {
-            inRow = 0;
-        }
-        if (inRow > 10) {
+        if (moveTimes.checkTimes()) {
             saveAllData();
             setTimeout(() => {
-                location.reload();
-            }, 100);
+            location.reload();
+            }, 250);
         }
-        moveTimes.thisNewTime();
         switch (dir) {
             case "s":
                     mineBlock(curX, curY + 1, "mining", 1);
@@ -545,6 +633,10 @@ function movePlayer(dir) {
 
 function mineBlock(x, y, cause, luck) {
     if (mine[y][x] != "⚪" && mine[y][x] != "⛏️" && mine[y][x] != "⬜")  {
+        let ore = mine[y][x];
+        if (ore == "🟩") {
+            ore = "🟫";
+        }
         if (cause == "reset") {
             giveBlock(mine[y][x], x, y, true);
             mine[y][x] = "⚪"
@@ -668,24 +760,41 @@ function displayArea() {
 
 
   function checkAllAround(x, y, luck) {
+        let generated;
         if (x - 1 >= 0) {
             if (mine[y][x - 1] == "⬜") {
-                mine[y][x - 1] = generateBlock(luck, [y, x-1]);
+                generated = generateBlock(luck, [y, x-1]);
+                mine[y][x - 1] = generated[0];
+                if (generated[1]) {
+                    verifiedOres.verifyLog(y, x-1);
+                }
                 blocksRevealedThisReset++;
             }
         }
         if (mine[y][x + 1] == "⬜") {
-                mine[y][x + 1] = generateBlock(luck, [y, x+1]);
+            generated = generateBlock(luck, [y, x+1]);
+                mine[y][x + 1] = generated[0];
+                if (generated[1]) {
+                    verifiedOres.verifyLog(y, x+1);
+                }
                 blocksRevealedThisReset++;
             }
         if (mine[y + 1][x] == "⬜") {
-                mine[y + 1][x] = generateBlock(luck, [y+1, x]);
+            generated = generateBlock(luck, [y+1, x]);
+                mine[y + 1][x] = generated[0];
+                if (generated[1]) {
+                    verifiedOres.verifyLog(y+1, x);
+                }
                 blocksRevealedThisReset++;
             }
         
         if (y - 1 >= 0) {
             if (mine[y - 1][x] == "⬜") {
-                mine[y - 1][x] = generateBlock(luck, [y-1, x]);
+                generated = generateBlock(luck, [y-1, x]);
+                mine[y - 1][x] = generated[0];
+                if (generated[1]) {
+                    verifiedOres.verifyLog(y-1, x);
+                }
                 blocksRevealedThisReset++;
             }
         }
@@ -703,8 +812,18 @@ function displayArea() {
 let multis = [1, 50, 250, 500];
 let inv;
 function giveBlock(type, x, y, fromReset) {
+    if (gears[4]) {
+        let block = Object.keys(currentLayer);
+        block = block[block.length - 1];
+        oreList[block][1][0]++;
+        updateInventory(block, 1);
+    }
+    
     if (type != "⛏️") {
         inv = 1;
+        if (type == "🟩") {
+            type = "🟫";
+        }   
         if (Math.floor(Math.random() * 50) == 25) {
                 inv = 2;
             } else if (Math.floor(Math.random() * 250) == 125) {
@@ -712,17 +831,24 @@ function giveBlock(type, x, y, fromReset) {
             }   else if (Math.floor(Math.random() * 500) == 250) {
                 inv = 4;
             }
-        if (type == "🟩") {
-                type = "🟫";
-        }   
+            if (Math.round(1 / (oreList[type][0])) >= 160000000) {
+                verifiedOres.verifyFind(mine[y][x], y, x, names[inv - 1]);
+            }
             if (Math.round(1/oreList[type][0]) >= 750000) {
-                logFind(type, x, y, names[inv - 1], totalMined, fromReset);
+                if (currentPickaxe >= 7) {
+                    if (Math.round(1/oreList[type][0]) > 2000000) {
+                        logFind(type, x, y, names[inv - 1], totalMined, fromReset);
+                    } 
+                } else {
+                    logFind(type, x, y, names[inv - 1], totalMined, fromReset);
+                }
             }
             oreList[type][1][inv - 1]++;
             updateInventory(type, inv);
     }
 }
 function generateBlock(luck, location) {
+    let hasLog = false
       let probabilityTable = currentLayer;
       let blockToGive = "";
       let summedProbability = 0;
@@ -736,12 +862,18 @@ function generateBlock(luck, location) {
         }
         }
         if (Math.round(1 / (probabilityTable[blockToGive])) > 5000000000) {
+            verifiedOres.createLog(location[0],location[1],blockToGive, new Error(), luck);
+            hasLog = true;
             spawnMessage(blockToGive, location);
             playSound("zenith");
         } else if (Math.round(1 / (probabilityTable[blockToGive])) > 750000000) {
+            verifiedOres.createLog(location[0],location[1],blockToGive, new Error(), luck);
+            hasLog = true;
             spawnMessage(blockToGive, location);
             playSound("otherworldly");
         } else if (Math.round(1 / (probabilityTable[blockToGive])) >= 160000000){
+            verifiedOres.createLog(location[0],location[1],blockToGive, new Error(), luck);
+            hasLog = true;
             spawnMessage(blockToGive, location);
             playSound("unfathomable");
         } else if (Math.round(1 / (probabilityTable[blockToGive])) >= 25000000) {
@@ -749,14 +881,16 @@ function generateBlock(luck, location) {
             playSound("enigmatic");
         } else if (Math.round(1 / (probabilityTable[blockToGive])) >= 5000000) {
             spawnMessage(blockToGive, location);
-            playSound("transcendent");
+            if (currentPickaxe < 8 && !(gears[3])) {
+                playSound("transcendent");
+            }
         } else if (Math.round(1 / (probabilityTable[blockToGive])) >= 750000) {
             spawnMessage(blockToGive, location);
             if (currentPickaxe < 7) {
                 playSound("exotic");
             }
         }
-        return blockToGive;
+        return [blockToGive, hasLog];
 }
 let variant = 1;
 function updateInventory(type, inv) {
@@ -931,10 +1065,23 @@ let loggedFinds = [];
 let latestSpawns = [];
 function spawnMessage(block, location) {
     let output = "";
-    if (currentPickaxe == 5 || gears[0]) {
+    let addToLatest = true;
+    if (currentPickaxe == 5) {
         latestSpawns.push([block, location[1], location[0]]);
+    } else if (currentPickaxe < 7) {
+        if (gears[0]) {
+            latestSpawns.push([block, location[1], location[0]]);
+        } else {
+            latestSpawns.push([block, undefined, undefined]);
+        }  
+    } else if (Math.round(1 / (oreList[block][0])) > 2000000) {
+        if (gears[0]) {
+            latestSpawns.push([block, location[1], location[0]]);
+        } else {
+            latestSpawns.push([block, undefined, undefined]);
+        } 
     } else {
-        latestSpawns.push([block, undefined, undefined]);
+        addToLatest = false;
     }
     if (gears[3]) {
         loggedFinds.push([location[0], location[1]]);
@@ -942,26 +1089,28 @@ function spawnMessage(block, location) {
     if (latestSpawns.length > 10) {
         latestSpawns.splice(0, 1);
     }
-    for (let i = latestSpawns.length - 1; i >= 0; i--) {
-        output += latestSpawns[i][0] + " 1/" + (Math.round(1 / (oreList[latestSpawns[i][0]][0]))).toLocaleString();
-        if (latestSpawns[i][1] != undefined) {
-            output += " | X: " + (latestSpawns[i][1] - 1000000000) + ", Y: " + -(latestSpawns[i][2]) + "<br>";
-        } else {
-            output += "<br>";
+    if (addToLatest) {
+        for (let i = latestSpawns.length - 1; i >= 0; i--) {
+            output += latestSpawns[i][0] + " 1/" + (Math.round(1 / (oreList[latestSpawns[i][0]][0]))).toLocaleString();
+            if (latestSpawns[i][1] != undefined) {
+                output += " | X: " + (latestSpawns[i][1] - 1000000000) + ", Y: " + -(latestSpawns[i][2]) + "<br>";
+            } else {
+                output += "<br>";
+            }
         }
-    }
-    document.getElementById("latestSpawns").innerHTML = output;
-    if (currentPickaxe == 5 || gears[0]) {
-        document.getElementById("spawnMessage").innerHTML = block + " Has Spawned!<br>" + "1/" + (Math.round(1 / (oreList[block][0]))).toLocaleString() + "<br>X: " + (location[1] - 1000000000) + " | Y: " + -(location[0]);
-    } else {
-        document.getElementById("spawnMessage").innerHTML = block + " Has Spawned!<br>" + "1/" + (Math.round(1 / (oreList[block][0]))).toLocaleString();
+        document.getElementById("latestSpawns").innerHTML = output;
+        if (currentPickaxe == 5 || gears[0]) {
+            document.getElementById("spawnMessage").innerHTML = block + " Has Spawned!<br>" + "1/" + (Math.round(1 / (oreList[block][0]))).toLocaleString() + "<br>X: " + (location[1] - 1000000000) + " | Y: " + -(location[0]);
+        } else {
+            document.getElementById("spawnMessage").innerHTML = block + " Has Spawned!<br>" + "1/" + (Math.round(1 / (oreList[block][0]))).toLocaleString();
+        }
     }
     clearTimeout(spawnOre);
     spawnOre = setTimeout(() => {
         document.getElementById("spawnMessage").innerHTML = "Spawn Messages Appear Here!"
       }, 20000);
     if (blocksRevealedThisReset > mineCapacity - 5000) {
-        mineCapacity += 2000;
+        mineCapacity += 5000;
     }
 }
 function moveOne(dir, button) {
@@ -980,14 +1129,8 @@ async function mineReset() {
     mineCapacity = 40000;
     let temp = curDirection;
     curDirection = "";
-    if (gears[3]) {
-        for (let i = 0; i < loggedFinds.length; i++) {
-            mineBlock(loggedFinds[i][1], loggedFinds[i][0], "reset", 1);
-        }
-        loggedFinds = [];
-    } else {
-        let temp2 = await collectOres(temp);
-    }
+    let temp2 = await collectOres(temp);
+    loggedFinds = [];
     canMine = await mineResetAid();
     checkAllAround(curX, curY, 1);
     mine[curY][curX] = "⛏️"
@@ -996,59 +1139,67 @@ async function mineReset() {
 }
 function collectOres(temp) {
     return new Promise((resolve) => {
-        let direction = "";
-        if (temp != "") {
-            direction = temp;
-        } else if (lastDirection != "") {
-            direction = lastDirection;
-        }
-        if (direction == "s") {
-            let constraints = getParams(30, 250);
-            for (let r = curY - constraints[1]; r < curY + 30; r++) {
-                for (let c = curX - constraints[0]; c < curX + 30; c++) {
-                    if (mine[r] != undefined) {
-                        if (oreList[mine[r][c]] != undefined) {
-                            if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
-                                mineBlock(c, r, "reset", 1);
+        if (gears[3]) {
+            for (let i = 0; i < loggedFinds.length; i++) {
+                if (mine[loggedFinds[i][0]] != undefined && mine[loggedFinds[i][0]][loggedFinds[i][1]] != undefined) {
+                    mineBlock(loggedFinds[i][1], loggedFinds[i][0], "reset", 1);
+                }
+            }
+        } else {
+            let direction = "";
+            if (temp != "") {
+                direction = temp;
+            } else if (lastDirection != "") {
+                direction = lastDirection;
+            }
+            if (direction == "s") {
+                let constraints = getParams(30, 250);
+                for (let r = curY - constraints[1]; r < curY + 30; r++) {
+                    for (let c = curX - constraints[0]; c < curX + 30; c++) {
+                        if (mine[r] != undefined) {
+                            if (oreList[mine[r][c]] != undefined) {
+                                if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
+                                    mineBlock(c, r, "reset", 1);
+                                }
                             }
                         }
                     }
                 }
-            }
-        } else if (direction == "w") {
-            let constraints = getParams(30, 30);
-            for (let r = curY - constraints[1]; r < curY + 250; r++) {
-                for (let c = curX - constraints[0]; c < curX + 30; c++) {
-                    if (mine[r] != undefined) {
-                        if (oreList[mine[r][c]] != undefined) {
-                            if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
-                                mineBlock(c, r, "reset", 1);
+            } else if (direction == "w") {
+                let constraints = getParams(30, 30);
+                for (let r = curY - constraints[1]; r < curY + 250; r++) {
+                    for (let c = curX - constraints[0]; c < curX + 30; c++) {
+                        if (mine[r] != undefined) {
+                            if (oreList[mine[r][c]] != undefined) {
+                                if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
+                                    mineBlock(c, r, "reset", 1);
+                                }
                             }
                         }
                     }
                 }
-            }
-        } else if (direction == "a") {
-            let constraints = getParams(30, 30);
-            for (let r = curY - constraints[1]; r < curY + 30; r++) {
-                for (let c = curX - constraints[0]; c < curX + 250; c++) {
-                    if (mine[r] != undefined) {
-                        if (oreList[mine[r][c]] != undefined) {
-                            if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
-                                mineBlock(c, r, "reset", 1);
+            } else if (direction == "a") {
+                let constraints = getParams(30, 30);
+                for (let r = curY - constraints[1]; r < curY + 30; r++) {
+                    for (let c = curX - constraints[0]; c < curX + 250; c++) {
+                        if (mine[r] != undefined) {
+                            if (oreList[mine[r][c]] != undefined) {
+                                if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
+                                    mineBlock(c, r, "reset", 1);
+                                }
                             }
                         }
                     }
                 }
-            }
-        } else if (direction == "d") {
-            let constraints = getParams(250, 30);
-            for (let r = curY - constraints[1]; r < curY + 30; r++) {
-                for (let c = curX - constraints[0]; c < curX + 30; c++) {
-                    if (mine[r] != undefined) {
-                        if (oreList[mine[r][c]] != undefined) {
-                            if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
-                                mineBlock(c, r, "reset", 1);
+            } else if (direction == "d") {
+                let constraints = getParams(250, 30);
+                for (let r = curY - constraints[1]; r < curY + 30; r++) {
+                    for (let c = curX - constraints[0]; c < curX + 30; c++) {
+                        if (mine[r] != undefined) {
+                            if (oreList[mine[r][c]] != undefined) {
+                                if (Math.round(1 / (oreList[mine[r][c]][0])) >= 750000) {
+                                    mineBlock(c, r, "reset", 1);
+                                }
                             }
                         }
                     }
@@ -1186,3 +1337,9 @@ function toggleMusic() {
         document.getElementById("musicButton").innerHTML = "Unmute Music";
     }
 }
+
+let moveTimes = new antiCheat();
+let verifiedOres = new secureLogs();
+
+
+
